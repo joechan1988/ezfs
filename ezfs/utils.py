@@ -15,8 +15,11 @@ def execute(cmd, debug=True):
             return "Command Failed: " + ex.message
 
 
-def get_snapshot_list(dataset):
-    cmd = "zfs list -t snap -H  -r {0} |awk '{{print $1}}'".format(dataset)
+def get_snapshot_list(dataset, remote_host=None):
+    cmd = "/usr/local/bin/zfs list -t snap -H  -r {} |awk '{{print $1}}'".format(dataset)
+    if remote_host is not None:
+        cmd = "ssh {} sudo ".format(remote_host) + cmd
+
     output = execute(cmd)
     snapshot_list = output.split("\n")
 
@@ -26,8 +29,48 @@ def get_snapshot_list(dataset):
     return snapshot_list
 
 
-def _delete_snapshot():
-    pass
+def delete_snapshot(name, remote_host=None):
+    cmd = "/usr/local/bin/zfs destroy {}".format(name)
+
+    if remote_host is not None:
+        cmd = "ssh {} sudo ".format(remote_host) + cmd
+    execute(cmd)
+
+
+def send_full_snapshot(src, dest, remote_host=None):
+    if remote_host is not None:
+        cmd = "/usr/local/bin/zfs send {} | ssh {} sudo /usr/local/bin/zfs receive -F {}".format(src, remote_host, dest)
+    else:
+        cmd = "/usr/local/bin/zfs send {} | /usr/local/bin/zfs receive -F {}".format(src, dest)
+
+    execute(cmd)
+
+
+def send_incr_snapshot(start, end, dest_dataset, remote_host=None):
+    if remote_host is not None:
+        cmd = "/usr/local/bin/zfs send -I {start} {end} | ssh {host} sudo /usr/local/bin/zfs receive -d -F {dest}".format(
+            start=start, end=end, host=remote_host, dest=dest_dataset)
+    else:
+        cmd = "/usr/local/bin/zfs send -I {start} {end} | /usr/local/bin/zfs receive -d -F {dest}".format(start=start,
+                                                                                                          end=end,
+                                                                                                          dest=dest_dataset)
+
+    execute(cmd)
+
+
+def create_snapshot(dataset, snap_name):
+    cmd = "/usr/local/bin/zfs snapshot {}@{}".format(dataset, snap_name)
+    execute(cmd)
+
+
+def get_snapshot_tag(snap):
+    snap_tag = snap.split("@")[-1]
+    return snap_tag
+
+
+def append_snapshot_tag(dataset, tag):
+    snapshot = dataset + "@" + tag
+    return snapshot
 
 
 def _get_snapshot_policy():
