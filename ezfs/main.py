@@ -6,6 +6,7 @@ import utils
 import os
 import sys
 
+
 @click.group()
 def cli():
     """
@@ -19,6 +20,7 @@ def cli():
         print("No symbol link of zpool binary found in /usr/local/bin/, please create first...")
         sys.exit(0)
 
+
 @cli.group()
 def snap():
     """
@@ -27,9 +29,10 @@ def snap():
 
 
 @cli.command()
-@click.option("--pool","-p",required=False)
-def list(pool):
-    utils.list_all(pool)
+@click.option("--pool", "-p")
+@click.option("--options", "-o")
+def list(pool, options):
+    utils.list_all(pool, options)
 
 
 @snap.command()

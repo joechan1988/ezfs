@@ -21,7 +21,7 @@ def execute(cmd, check_output=True, debug=True):
             return "Command Failed: " + ex.message
 
 
-def list_all(pool=None):
+def list_all(pool=None, options=None):
     if pool is None:
         cmd = "/usr/local/bin/zpool list -H | awk '{print $1}'"
         op = execute(cmd)
@@ -29,18 +29,21 @@ def list_all(pool=None):
     else:
         pool_list = [pool]
 
+    if options is None:
+        options = "name,used,refer,compressratio,mountpoint"
+
     for pool in pool_list:
         print("-------Pool: {} ---------\n".format(pool))
 
         print("### Datasets: ###\n")
-        cmd = "/usr/local/bin/zfs list -r {pool} -t filesystem -o name,used,refer,compressratio,mountpoint".format(
-            pool=pool)
+        cmd = "/usr/local/bin/zfs list -r {pool} -t filesystem -o {options}".format(
+            pool=pool, options=options)
         execute(cmd, check_output=False)
         print(" ")
 
         print("### Volumes: ###\n")
-        cmd = "/usr/local/bin/zfs list -r {pool} -t volume -o name,used,refer,compressratio,mountpoint".format(
-            pool=pool)
+        cmd = "/usr/local/bin/zfs list -r {pool} -t volume -o {options}".format(
+            pool=pool, options=options)
         execute(cmd, check_output=False)
         print(" ")
 
