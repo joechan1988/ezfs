@@ -73,6 +73,7 @@ def delete_snapshot(name, remote_host=None):
 
 
 def send_full_snapshot(src, dest, remote_host=None):
+    print("Sending full snapshot to destination dataset...")
     if remote_host is not None:
         cmd = "/usr/local/bin/zfs send {} | ssh {} sudo /usr/local/bin/zfs receive -F {}".format(src, remote_host, dest)
     else:
@@ -82,6 +83,7 @@ def send_full_snapshot(src, dest, remote_host=None):
 
 
 def send_incr_snapshot(start, end, dest_dataset, remote_host=None):
+    print("Sending increment snapshot {} to destination dataset...".format(end))
     if remote_host is not None:
         cmd = "/usr/local/bin/zfs send -I {start} {end} | ssh {host} sudo /usr/local/bin/zfs receive -d -F {dest}".format(
             start=start, end=end, host=remote_host, dest=dest_dataset)
