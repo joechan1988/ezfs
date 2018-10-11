@@ -7,8 +7,9 @@ def test_date():
     import datetime
 
     now = datetime.datetime.now()
-    now_week = now.isocalendar()[1]
-    print now_week
+    d = utils.string_to_date("201810010900")
+    yesterday_date = (d - datetime.timedelta(days=1)).day
+    print yesterday_date
 
 
 def test_snap_list():
@@ -21,4 +22,4 @@ def test_snap_rotate():
 
 
 if __name__ == '__main__':
-    test_snap_rotate()
+    test_date()

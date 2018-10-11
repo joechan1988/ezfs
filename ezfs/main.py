@@ -31,6 +31,7 @@ def rotate(dataset, new):
     cur_weekday = cur_date.isoweekday()
     cur_week = cur_date.isocalendar()[1]
     cur_day = cur_date.day
+    yst_day = (cur_date - datetime.timedelta(days=1)).day
     cur_hour = cur_date.hour
     cur_year = cur_date.year
 
@@ -45,7 +46,8 @@ def rotate(dataset, new):
         if snap_date.year != cur_year or \
                 (snap_date.month != cur_month and snap_date.day != 1) or \
                 (snap_date.isocalendar()[1] != cur_week and snap_date.isoweekday() != 1 and snap_date.day != 1) or \
-                (snap_date.day != cur_day and snap_date.hour != 0):
+                (snap_date.day != cur_day and snap_date.day != yst_day and snap_date.hour != 0) or \
+                (snap_date.day == yst_day and snap_date.hour < cur_hour and snap_date.hour != 0):
             print("Deleting snapshot {}".format(snap))
             utils.delete_snapshot(snap)
 
