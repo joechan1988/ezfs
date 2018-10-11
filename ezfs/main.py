@@ -70,6 +70,7 @@ def sync(dataset, host, dest_dataset):
             snap_deleted.append(snap)
 
     for snap in snap_deleted:
+        print("Deleting destination snapshot {}".format(snap))
         utils.delete_snapshot(snap, remote_host=host)
 
     # Find first snap in common
@@ -81,7 +82,7 @@ def sync(dataset, host, dest_dataset):
             last_common_snap = snap
             break
 
-    # print last_common_snap
+    print last_common_snap
 
     if not last_common_snap:
         src_snap = src_dataset_snap_list[-1]
@@ -94,6 +95,7 @@ def sync(dataset, host, dest_dataset):
     else:
         incr_start = last_common_snap
         incr_end = src_dataset_snap_list[-1]
+        print("Sending new snapshot {} to backup dataset...".format(incr_end))
         utils.send_incr_snapshot(incr_start, incr_end, dest_dataset, remote_host=host)
 
     # Start Sync Increment Snapshots
