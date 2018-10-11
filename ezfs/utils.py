@@ -58,8 +58,10 @@ def send_incr_snapshot(start, end, dest_dataset, remote_host=None):
     execute(cmd)
 
 
-def create_snapshot(dataset, snap_name):
-    cmd = "/usr/local/bin/zfs snapshot {}@{}".format(dataset, snap_name)
+def create_snapshot(dataset, snap_tag):
+    snap_name = dataset+"@"+snap_tag
+    print("Creating snapshot {} ...".format(snap_name))
+    cmd = "/usr/local/bin/zfs snapshot {}".format(snap_name)
     execute(cmd)
 
 
