@@ -32,12 +32,13 @@ def list_all():
         print("### Datasets: ###\n")
         cmd = "/usr/local/bin/zfs list -r {pool} -t filesystem -o name,used,refer,compressratio,mountpoint".format(pool=pool)
         execute(cmd,check_output=False)
-        print("\n")
+        print(" ")
+
 
         print("### Volumes: ###\n")
         cmd = "/usr/local/bin/zfs list -r {pool} -t volume -o name,used,refer,compressratio,mountpoint".format(pool=pool)
         execute(cmd,check_output=False)
-        print("\n")
+        print(" ")
 
 
     # cmd = "/usr/local/bin/zfs list -o name,used,refer,type,compressratio,mountpoint"
