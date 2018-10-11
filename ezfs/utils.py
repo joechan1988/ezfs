@@ -2,7 +2,7 @@ import subprocess
 import datetime
 
 
-def execute(cmd, check_output=True,debug=True):
+def execute(cmd, check_output=True, debug=True):
     if not check_output:
         try:
             subprocess.call(cmd, shell=True, stderr=subprocess.STDOUT)
@@ -22,9 +22,27 @@ def execute(cmd, check_output=True,debug=True):
 
 
 def list_all():
-    cmd = "/usr/local/bin/zfs list -o name,used,refer,type,mountpoint"
+    cmd = "/usr/local/bin/zpool list -H | awk '{print $1}'"
+    op = execute(cmd)
+    pool_list = op.split("\n")[:-1]
 
-    execute(cmd,check_output=False)
+    for pool in pool_list:
+        print("-------Pool: {} ---------\n".format(pool))
+
+        print("### Datasets: ###\n")
+        cmd = "/usr/local/bin/zfs list -r {pool} -t filesystem -o name,used,refer,compressratio,mountpoint".format(pool=pool)
+        execute(cmd,check_output=False)
+        print("\n")
+
+        print("### Volumes: ###\n")
+        cmd = "/usr/local/bin/zfs list -r {pool} -t volume -o name,used,refer,compressratio,mountpoint".format(pool=pool)
+        execute(cmd,check_output=False)
+        print("\n")
+
+
+    # cmd = "/usr/local/bin/zfs list -o name,used,refer,type,compressratio,mountpoint"
+    #
+    # execute(cmd, check_output=False)
     # content = output[1:]
     # header = output[0]
     # print header
@@ -75,7 +93,7 @@ def send_incr_snapshot(start, end, dest_dataset, remote_host=None):
 
 
 def create_snapshot(dataset, snap_tag):
-    snap_name = dataset+"@"+snap_tag
+    snap_name = dataset + "@" + snap_tag
     print("Creating snapshot {} ...".format(snap_name))
     cmd = "/usr/local/bin/zfs snapshot {}".format(snap_name)
     execute(cmd)
