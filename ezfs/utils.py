@@ -2,7 +2,13 @@ import subprocess
 import datetime
 
 
-def execute(cmd, debug=True):
+def execute(cmd, check_output=True,debug=True):
+    if not check_output:
+        try:
+            subprocess.call(cmd, shell=True, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as ex:
+            print("Command Failed: " + ex.message)
+
     if not debug:
         try:
             return subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
@@ -13,6 +19,16 @@ def execute(cmd, debug=True):
             return subprocess.check_output(cmd, shell=True)
         except subprocess.CalledProcessError as ex:
             return "Command Failed: " + ex.message
+
+
+def list_all():
+    cmd = "/usr/local/bin/zfs list -o name,used,refer,type,mountpoint"
+
+    execute(cmd,check_output=False)
+    # content = output[1:]
+    # header = output[0]
+    # print header
+    # print content
 
 
 def get_snapshot_list(dataset, remote_host=None):

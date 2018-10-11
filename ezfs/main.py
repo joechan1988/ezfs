@@ -21,6 +21,11 @@ def snap():
     """
 
 
+@cli.command()
+def list():
+    utils.list_all()
+
+
 @snap.command()
 @click.argument('dataset')
 @click.argument('new', required=False)
