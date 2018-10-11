@@ -21,33 +21,28 @@ def execute(cmd, check_output=True, debug=True):
             return "Command Failed: " + ex.message
 
 
-def list_all():
-    cmd = "/usr/local/bin/zpool list -H | awk '{print $1}'"
-    op = execute(cmd)
-    pool_list = op.split("\n")[:-1]
+def list_all(pool=None):
+    if pool is None:
+        cmd = "/usr/local/bin/zpool list -H | awk '{print $1}'"
+        op = execute(cmd)
+        pool_list = op.split("\n")[:-1]
+    else:
+        pool_list = [pool]
 
     for pool in pool_list:
         print("-------Pool: {} ---------\n".format(pool))
 
         print("### Datasets: ###\n")
-        cmd = "/usr/local/bin/zfs list -r {pool} -t filesystem -o name,used,refer,compressratio,mountpoint".format(pool=pool)
-        execute(cmd,check_output=False)
+        cmd = "/usr/local/bin/zfs list -r {pool} -t filesystem -o name,used,refer,compressratio,mountpoint".format(
+            pool=pool)
+        execute(cmd, check_output=False)
         print(" ")
-
 
         print("### Volumes: ###\n")
-        cmd = "/usr/local/bin/zfs list -r {pool} -t volume -o name,used,refer,compressratio,mountpoint".format(pool=pool)
-        execute(cmd,check_output=False)
+        cmd = "/usr/local/bin/zfs list -r {pool} -t volume -o name,used,refer,compressratio,mountpoint".format(
+            pool=pool)
+        execute(cmd, check_output=False)
         print(" ")
-
-
-    # cmd = "/usr/local/bin/zfs list -o name,used,refer,type,compressratio,mountpoint"
-    #
-    # execute(cmd, check_output=False)
-    # content = output[1:]
-    # header = output[0]
-    # print header
-    # print content
 
 
 def get_snapshot_list(dataset, remote_host=None):

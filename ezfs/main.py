@@ -3,27 +3,33 @@
 import click
 import datetime
 import utils
-
+import os
+import sys
 
 @click.group()
 def cli():
     """
-
-    :return:
+    Enhanced ZFS CLI Tool version 1.0
     """
+    if not os.path.exists("/usr/local/bin/zfs"):
+        print("No symbol link of zfs binary found in /usr/local/bin/, please create first...")
+        sys.exit(0)
 
+    if not os.path.exists("/usr/local/bin/zpool"):
+        print("No symbol link of zpool binary found in /usr/local/bin/, please create first...")
+        sys.exit(0)
 
 @cli.group()
 def snap():
     """
-
-    :return:
+    Snapshot zfs datasets/volumes
     """
 
 
 @cli.command()
-def list():
-    utils.list_all()
+@click.option("--pool","-p",required=False)
+def list(pool):
+    utils.list_all(pool)
 
 
 @snap.command()
@@ -62,6 +68,11 @@ def rotate(dataset, new):
 @click.option('--host', '-h', required=False)
 @click.option('--dest-dataset', '-d', required=True)
 def sync(dataset, host, dest_dataset):
+    """
+    sample: \n
+    ezfs snap sync pool/dataset -d dest_pool/dest_dataset [-h user@hostname]
+
+    """
     dest_dataset_snap_list = utils.get_snapshot_list(dest_dataset, remote_host=host)
     src_dataset_snap_list = utils.get_snapshot_list(dataset)
 
