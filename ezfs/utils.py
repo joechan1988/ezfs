@@ -30,7 +30,7 @@ def list_all(pool=None, options=None):
         pool_list = [pool]
 
     if options is None:
-        options = "name,used,refer,compressratio,mountpoint"
+        options = "name,used,avail,refer,compressratio,mountpoint"
 
     for pool in pool_list:
         print("-------Pool: {} ---------\n".format(pool))
