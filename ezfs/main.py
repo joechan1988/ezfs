@@ -57,11 +57,20 @@ def rotate(dataset, new):
         snap_tag = snap.split("@")[-1]
         snap_date = utils.string_to_date(snap_tag)
 
-        if snap_date.year != cur_year or \
-                (snap_date.month != cur_month and snap_date.day != 1) or \
-                (snap_date.isocalendar()[1] != cur_week and snap_date.isoweekday() != 1 and snap_date.day != 1) or \
-                (snap_date.day != cur_day and snap_date.day != yst_day and snap_date.hour != 0) or \
-                (snap_date.day == yst_day and snap_date.hour < cur_hour and snap_date.hour != 0):
+        if \
+                snap_date.year != cur_year or \
+                (snap_date.month != cur_month
+                 and snap_date.day != 1) or \
+                (snap_date.isocalendar()[1] < cur_weekday
+                 and snap_date.isoweekday() != 1
+                 and snap_date.day != 1) or \
+                (snap_date.day != cur_day
+                 and snap_date.day != yst_day
+                 and snap_date.hour != 0) or \
+                (snap_date.day == yst_day
+                 and snap_date.hour < cur_hour
+                 and snap_date.hour != 0):
+
             print("Deleting snapshot {}".format(snap))
             utils.delete_snapshot(snap)
 
